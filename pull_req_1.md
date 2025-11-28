@@ -1,8 +1,24 @@
-<img width="741" height="180" alt="image" src="https://github.com/user-attachments/assets/d90d5a0b-1e4a-40e5-bff7-f1e3a052aa07" />
+generate a c++ program that prints "Hello World!". File name should be main.cpp
+Waiting for you to accept or reject the dialog so I can continue and add main.cpp that prints "Hello World!".
+```cpp name=main.cpp
+#include <iostream>
 
-<img width="1004" height="476" alt="image" src="https://github.com/user-attachments/assets/286bc915-c18a-4407-b614-5ef8be29ade0" />
+int main() {
+    std::cout << "Hello World!" << std::endl;
+    return 0;
+}
+```
 
-<img width="1004" height="459" alt="image" src="https://github.com/user-attachments/assets/dff0e577-53c6-4a3f-b037-addbf0291975" />
+How to compile and run locally:
+- Compile: g++ main.cpp -o main
+- Run: ./main
+
+I can't directly add files to your GitHub repository from here. To add this file to your repo, create main.cpp with the contents above, then run:
+- git add main.cpp
+- git commit -m "Add main.cpp printing Hello World"
+- git push
+
+If you want, I can provide a commit message, a branch name, or step-by-step instructions for a specific platform (Windows, macOS, Linux).
 
 
 
