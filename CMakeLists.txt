@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.14)
 
 project(HelloWorld VERSION 1.0 LANGUAGES CXX)
 
+# Provide a top-level CTest integration so we can create a 'check' target that runs tests.
+# include(CTest) exposes CTest-related variables and the CTEST_TESTER environment variable.
+include(CTest)
+
 # Require C++17
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -48,7 +52,9 @@ option(BUILD_TESTS "Build tests" OFF)
 
 # GoogleTest integration (download & build when BUILD_TESTS is ON)
 if (BUILD_TESTS)
+  # Enable testing and register CTest tests
   enable_testing()
+
   include(FetchContent)
 
   # Fetch GoogleTest; this will download the project at configure time if needed.
@@ -81,5 +87,14 @@ if (BUILD_TESTS)
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin"
   )
 
+  # Register the test with CTest so it can be run with 'ctest'
   add_test(NAME unit_tests COMMAND unit_tests)
+
+  # Provide a convenient 'check' target that runs CTest with verbose output on failure.
+  # Users can run: cmake --build . --target check
+  add_custom_target(check
+    COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+    DEPENDS unit_tests
+    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  )
 endif()
