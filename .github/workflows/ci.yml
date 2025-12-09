@@ -24,8 +24,6 @@ jobs:
 
       - name: Setup CMake
         uses: jwlawson/actions-setup-cmake@v1
-        with:
-          cmake-version: '3.24.3'
 
       - name: Build & Test (Linux/macOS)
         if: matrix.os != 'windows-latest'
@@ -33,24 +31,26 @@ jobs:
           set -e
           mkdir -p build
           cd build
-          cmake -DCMAKE_BUILD_TYPE=Release ..
+          echo "Configuring with BUILD_TESTS=ON"
+          cmake -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release ..
+          echo "Building"
           cmake --build . --config Release --parallel
+          echo "Running tests"
           ctest --output-on-failure -C Release
         shell: bash
 
       - name: Build & Test (Windows)
         if: matrix.os == 'windows-latest'
         run: |
-          REM Use the project's Windows build script if present, otherwise run equivalent commands
-          if exist "%GITHUB_WORKSPACE%\build_and_test.bat" (
-            build_and_test.bat Release
-          ) else (
-            mkdir build
-            cd build
-            cmake -DCMAKE_BUILD_TYPE=Release ..
-            cmake --build . --config Release -- /m
-            ctest --output-on-failure -C Release
-          )
+          REM Create build directory
+          if not exist "build" mkdir build
+          cd build
+          echo Configuring with BUILD_TESTS=ON
+          cmake -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release ..
+          echo Building
+          cmake --build . --config Release -- /m
+          echo Running tests
+          ctest --output-on-failure -C Release
         shell: cmd
 
       - name: Upload build artifacts (deploy placeholder)
