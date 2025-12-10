@@ -1,0 +1,62 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - '*develop*'
+      - '*master*'
+  pull_request:
+    branches:
+      - '*develop*'
+      - '*master*'
+
+jobs:
+  cross_build:
+    name: cross_build - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup CMake
+        uses: jwlawson/actions-setup-cmake@v1
+
+      - name: Build & Test (Linux/macOS)
+        if: matrix.os != 'windows-latest'
+        run: |
+          set -e
+          mkdir -p build
+          cd build
+          echo "Configuring with BUILD_TESTS=ON"
+          cmake -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release ..
+          echo "Building"
+          cmake --build . --config Release --parallel
+          echo "Running tests"
+          ctest --output-on-failure -C Release
+        shell: bash
+
+      - name: Build & Test (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          REM Create build directory
+          if not exist "build" mkdir build
+          cd build
+          echo Configuring with BUILD_TESTS=ON
+          cmake -DBUILD_TESTS=ON -DCMAKE_BUILD_TYPE=Release ..
+          echo Building
+          cmake --build . --config Release -- /m
+          echo Running tests
+          ctest --output-on-failure -C Release
+        shell: cmd
+
+      - name: Upload build artifacts (deploy placeholder)
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts-${{ matrix.os }}
+          path: |
+            build/bin
+            build\bin
